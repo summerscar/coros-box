@@ -13,7 +13,7 @@ dayjs.extend(relativeTime)
 const RANGE = 7  // 最近7天
 const RANGE_TIME = 1000 * 60 * 60 * 24 * RANGE
 const RECEND_DATA_LENGTH = 5
-const LOGIN_URL = 'https://www.coros.com/web/webdata/login.html'
+const LOGIN_URL = 'https://www.coros.com/web/reg/login.html'
 const MARKDOWN_FILE = 'README.md';
 const EMAIL = process.env.EMAIL
 const PASSWORD = process.env.PASSWORD
@@ -41,12 +41,12 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
         "mode": "cors",
         "credentials": "include"
     })
-
+    console.log(preLoginRes)
     const cookie = preLoginRes.headers.raw()['set-cookie'].map(item => item.split(';')[0]).join(';')
     const text = await preLoginRes.text()
     console.log(text)
     let $ = cheerio.load(text);
-    const cncoros = $('form input[name="cncoros"]')[0].attribs.value
+    const _csrf = $('form input[name="_csrf"]')[0].attribs.value
 
     const fetchConfig = {
         "headers": {
@@ -66,7 +66,7 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
         },
         "referrer": "https://www.coros.com/web/webdata/login.html",
         "referrerPolicy": "strict-origin-when-cross-origin",
-        "body": `cncoros=${encodeURIComponent(cncoros)}&data%5Bemail%5D=${encodeURIComponent(EMAIL)}&data%5Bpassword%5D=${encodeURIComponent(PASSWORD)}`,
+        "body": `_csrf=${encodeURIComponent(_csrf)}&data%5Bemail%5D=${encodeURIComponent(EMAIL)}&data%5Bpesd%5D=${encodeURIComponent(Buffer.from(PASSWORD).toString('base64'))}&data%5Bsec%5D=${encodeURIComponent(PASSWORD)}`,
         "method": "POST",
         "mode": "cors"
     }
