@@ -41,10 +41,9 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
         "mode": "cors",
         "credentials": "include"
     })
-    console.log(preLoginRes)
     const cookie = preLoginRes.headers.raw()['set-cookie'].map(item => item.split(';')[0]).join(';')
     const text = await preLoginRes.text()
-    console.log(text)
+
     let $ = cheerio.load(text);
     const _csrf = $('form input[name="_csrf"]')[0].attribs.value
 
