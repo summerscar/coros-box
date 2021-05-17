@@ -30,7 +30,9 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
     })
 
     const cookie = preLoginRes.headers.raw()['set-cookie'].map(item => item.split(';')[0]).join(';')
-    let $ = cheerio.load(await preLoginRes.text());
+    const text = await preLoginRes.text()
+    console.log(text)
+    let $ = cheerio.load(text);
     const cncoros = $('form input[name="cncoros"]')[0].attribs.value
 
     const fetchConfig = {
