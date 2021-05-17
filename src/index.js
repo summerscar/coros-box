@@ -23,6 +23,7 @@ if (!COOKIE) throw Error('set cookie env first!')
 ;(async () => {
     const res = await axios.get(API_URL, { headers: { cookie: COOKIE } })
     const $ = cheerio.load(res.data);
+    console.log(res.data, res.config)
     const checkError = $('body').find('ul.data-list-ul').length === 0
     if (checkError) throw Error('未能获取到数据，Cookie 也许过期了')
 
