@@ -5,9 +5,9 @@ const path = require('path')
 const fetch = require('node-fetch')
 require('dotenv').config()
 const relativeTime = require('dayjs/plugin/relativeTime')
-require('dayjs/locale/zh-cn')
+// require('dayjs/locale/zh-cn')
 
-dayjs.locale('zh-cn')
+// dayjs.locale('zh-cn')
 dayjs.extend(relativeTime)
 
 const RANGE = 7  // 最近7天
