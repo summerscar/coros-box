@@ -74,7 +74,7 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
     $ = cheerio.load(await res.text());
 
     const checkError = $('body').find('ul.data-list-ul').length === 0
-    if (checkError) throw Error('未能获取到数据，Cookie 也许过期了')
+    if (checkError) throw Error('未能获取到数据，检查下账号密码')
 
     const data = $('ul.data-list-ul li.item').toArray().map((el) => {
         const [time, title, distance, pace, device] = $(el).text().trim().split('\n').map(text => text.trim())
