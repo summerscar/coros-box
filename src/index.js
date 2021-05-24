@@ -10,7 +10,7 @@ const relativeTime = require('dayjs/plugin/relativeTime')
 // dayjs.locale('zh-cn')
 dayjs.extend(relativeTime)
 
-const RANGE = 7  // 最近7天
+const RANGE = 10  // 最近7天
 const RANGE_TIME = 1000 * 60 * 60 * 24 * RANGE
 const RECEND_DATA_LENGTH = 5
 const LOGIN_URL = 'https://www.coros.com/web/reg/login.html'
