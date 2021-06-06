@@ -125,6 +125,7 @@ function renderMarkdown(data) {
 
 function formatTitle (title) {
     switch (title) {
+        case 'Open Water':
         case 'Pool Swim':
             return `🏊‍${title}`
         case 'Run':
