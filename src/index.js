@@ -130,6 +130,8 @@ function formatTitle (title) {
             return `🏊‍${title}`
         case 'Run':
             return `🏃‍${title}`
+        case 'Bike':
+            return `🚲${title}`
         default:
             return title
     }   
