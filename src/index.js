@@ -127,9 +127,9 @@ function formatTitle (title) {
     switch (title) {
         case 'Open Water':
         case 'Pool Swim':
-            return `🏊‍${title}`
+            return `🏊${title}`
         case 'Run':
-            return `🏃‍${title}`
+            return `🏃${title}`
         case 'Bike':
             return `🚴${title}`
         default:
