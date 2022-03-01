@@ -45,6 +45,7 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
     const text = await preLoginRes.text()
 
     let $ = cheerio.load(text);
+    console.log('html:', text)
     const _csrf = $('form input[name="_csrf"]')[0].attribs.value
 
     const fetchConfig = {
@@ -70,9 +71,7 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
         "mode": "cors"
     }
     const res = await fetch(LOGIN_URL, fetchConfig);
-    const text = await res.text()
-    console.log('html: ', text)
-    $ = cheerio.load(text);
+    $ = cheerio.load(await res.text());
 
     const checkError = $('body').find('ul.data-list-ul').length === 0
     if (checkError) throw Error('未能获取到数据，检查下账号密码')
