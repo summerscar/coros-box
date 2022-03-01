@@ -70,8 +70,9 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
         "mode": "cors"
     }
     const res = await fetch(LOGIN_URL, fetchConfig);
-
-    $ = cheerio.load(await res.text());
+    const text = await res.text()
+    console.log('html: ', text)
+    $ = cheerio.load(text);
 
     const checkError = $('body').find('ul.data-list-ul').length === 0
     if (checkError) throw Error('未能获取到数据，检查下账号密码')
