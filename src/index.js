@@ -6,12 +6,12 @@ const fetch = require('node-fetch')
 const md5 = require('js-md5');
 require('dotenv').config()
 const relativeTime = require('dayjs/plugin/relativeTime')
-require('dayjs/locale/zh-cn')
+// require('dayjs/locale/zh-cn')
 
-dayjs.locale('zh-cn')
+// dayjs.locale('zh-cn')
 dayjs.extend(relativeTime)
 
-const RANGE = 7  // 最近7天
+const RANGE = 10  // 最近7天
 const RANGE_TIME = 1000 * 60 * 60 * 24 * RANGE
 const RECEND_DATA_LENGTH = 5
 const LOGIN_URL = 'https://www.coros.com/web/reg/login.html'
@@ -111,10 +111,13 @@ function renderMarkdown(data) {
 
 function formatTitle (title) {
     switch (title) {
+        case 'Open Water':
         case 'Pool Swim':
-            return `🏊‍${title}`
+            return `🏊${title}`
         case 'Run':
-            return `🏃‍${title}`
+            return `🏃${title}`
+        case 'Bike':
+            return `🚴${title}`
         default:
             return title
     }
