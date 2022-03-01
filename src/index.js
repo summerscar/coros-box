@@ -3,6 +3,7 @@ const dayjs = require('dayjs')
 const fs = require('fs')
 const path = require('path')
 const fetch = require('node-fetch')
+const md5 = require('js-md5');
 require('dotenv').config()
 const relativeTime = require('dayjs/plugin/relativeTime')
 require('dayjs/locale/zh-cn')
@@ -21,80 +22,65 @@ const PASSWORD = process.env.PASSWORD
 if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
 
 ;(async () => {
-    const preLoginRes = await fetch(LOGIN_URL, {
+    fetch("https://teamcnapi.coros.com/account/login", {
         "headers": {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept": "application/json, text/plain, */*",
             "accept-language": "zh-CN,zh;q=0.9",
             "cache-control": "no-cache",
+            "content-type": "application/json;charset=UTF-8",
             "pragma": "no-cache",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"90\", \"Google Chrome\";v=\"90\"",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"",
             "sec-ch-ua-mobile": "?0",
-            "sec-fetch-dest": "document",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": "none",
-            "sec-fetch-user": "?1",
-            "upgrade-insecure-requests": "1"
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-site",
+            "Referer": "https://trainingcn.coros.com/",
+            "Referrer-Policy": "strict-origin-when-cross-origin"
         },
-        "referrerPolicy": "strict-origin-when-cross-origin",
-        "body": null,
-        "method": "GET",
-        "mode": "cors",
-        "credentials": "include"
+        "body": "{\"account\":\"" + EMAIL + "\",\"accountType\":2,\"pwd\":\"" + md5(PASSWORD) + "\"}",
+        "method": "POST"
     })
-    const cookie = preLoginRes.headers.raw()['set-cookie'].map(item => item.split(';')[0]).join(';')
-    const text = await preLoginRes.text()
-
-    let $ = cheerio.load(text);
-    const _csrf = $('form input[name="_csrf"]')[0].attribs.value
-
-    const fetchConfig = {
+    .then(response => response.json())
+    .then(res => res.data.accessToken)
+    .then(token => fetch("https://teamcnapi.coros.com/activity/query?size=20&pageNumber=1&modeList=", {
         "headers": {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "accept-language": "zh-CN,zh;q=0.9",
-            "cache-control": "no-cache",
-            "content-type": "application/x-www-form-urlencoded",
-            "pragma": "no-cache",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"90\", \"Google Chrome\";v=\"90\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-fetch-dest": "document",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": "same-origin",
-            "sec-fetch-user": "?1",
-            "upgrade-insecure-requests": "1",
-            "cookie": cookie
+          "accept": "application/json, text/plain, */*",
+          "accept-language": "zh-CN,zh;q=0.9",
+          "accesstoken": token,
+          "cache-control": "no-cache",
+          "pragma": "no-cache",
+          "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"98\", \"Google Chrome\";v=\"98\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"macOS\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-site",
+          "Referer": "https://trainingcn.coros.com/",
+          "Referrer-Policy": "strict-origin-when-cross-origin"
         },
-        "referrer": "https://www.coros.com/web/webdata/login.html",
-        "referrerPolicy": "strict-origin-when-cross-origin",
-        "body": `_csrf=${encodeURIComponent(_csrf)}&data%5Bemail%5D=${encodeURIComponent(EMAIL)}&data%5Bpesd%5D=${encodeURIComponent(Buffer.from(PASSWORD).toString('base64'))}&data%5Bsec%5D=${encodeURIComponent(PASSWORD)}`,
-        "method": "POST",
-        "mode": "cors"
-    }
-    const res = await fetch(LOGIN_URL, fetchConfig);
+        "body": null,
+        "method": "GET"
+      }))
+      .then(response => response.json())
+      .then(res => res.data.dataList)
+      .then(list => {
+          const data = list.map(item => ({
+            time: item.startTime * 1000,
+            title: item.name,         // 标题
+            distance: (item.distance / 1000).toFixed(1) + 'km',      // 距离
+            pace: dayjs(item.avgSpeed * 1000).format("mm'ss''"),           // 配速
+            device: item.device        // 设备
+          }))
 
-    $ = cheerio.load(await res.text());
+          const recenetData = data
+            .filter(({time}) => new Date().getTime() - time < RANGE_TIME)
+            .map(data => ({ ...data, relativeTime: dayjs().from(dayjs(data.time))}))
+            .slice(0, RECEND_DATA_LENGTH)
 
-    const checkError = $('body').find('ul.data-list-ul').length === 0
-    if (checkError) throw Error('未能获取到数据，检查下账号密码')
-
-    const data = $('ul.data-list-ul li.item').toArray().map((el) => {
-        const [time, title, distance, pace, device] = $(el).text().trim().split('\n').map(text => text.trim())
-
-        return {
-            time,
-            title,         // 标题
-            distance,      // 距离
-            pace,           // 配速
-            device         // 设备
-        }
-    });
-
-    const recenetData = data
-        .filter(({time}) => new Date().getTime() - new Date(dayjs(time).toISOString()).getTime() < RANGE_TIME)
-        .map(data => ({ ...data, relativeTime: dayjs().from(dayjs(data.time))}))
-        .slice(0, RECEND_DATA_LENGTH)
-
-    console.log('data: \n', recenetData)
-    renderMarkdown(recenetData)
+            console.log('data: \n', recenetData)
+            renderMarkdown(recenetData)
+      })
 })();
 
 
@@ -131,5 +117,5 @@ function formatTitle (title) {
             return `🏃‍${title}`
         default:
             return title
-    }   
+    }
 }
