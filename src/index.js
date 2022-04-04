@@ -110,6 +110,9 @@ function renderMarkdown(data) {
 }
 
 function formatTitle (title) {
+    if (title.includes("跑步")) {
+      return `🏃${title}`;
+    }
     switch (title) {
         case 'Open Water':
         case 'Pool Swim':
