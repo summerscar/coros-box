@@ -96,7 +96,16 @@ function renderMarkdown(data) {
         const prepareData = ['🏃最近运动', '```text', '```']
 
         data.forEach(item => {
-            prepareData.splice(prepareData.length - 1, 0, `${formatTitle(item.title).padEnd(15, ' ')}${item.distance.padEnd(12, ' ')}🕘 ${item.pace.padEnd(17, ' ')}${item.relativeTime} `)
+            prepareData.splice(
+              prepareData.length - 1,
+              0,
+              `${formatTitle(item.title)
+                .replace(" ", " ")
+                .padEnd(15, " ")}${item.distance.padEnd(
+                12,
+                " "
+              )}🕘 ${item.pace.padEnd(17, " ")}${item.relativeTime} `
+            );
         })
         if (prepareData.length === 3) {
             prepareData.splice(2, 0, '这个人有点懒~')
