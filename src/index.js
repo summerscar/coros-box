@@ -1,4 +1,3 @@
-const cheerio = require('cheerio')
 const dayjs = require('dayjs')
 const fs = require('fs')
 const path = require('path')
@@ -6,10 +5,12 @@ const fetch = require('node-fetch')
 const md5 = require('js-md5');
 require('dotenv').config()
 const relativeTime = require('dayjs/plugin/relativeTime')
+const duration = require('dayjs/plugin/duration')
 // require('dayjs/locale/zh-cn')
 
 // dayjs.locale('zh-cn')
 dayjs.extend(relativeTime)
+dayjs.extend(duration)
 
 const RANGE = 10  // 最近7天
 const RANGE_TIME = 1000 * 60 * 60 * 24 * RANGE
@@ -70,6 +71,7 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
             title: item.name,         // 标题
             distance: (item.distance / 1000).toFixed(1) + 'km',      // 距离
             pace: dayjs(item.avgSpeed * 1000).format("mm'ss''"),           // 配速
+            totalTime: dayjs.duration(item.totalTime).format('HH:mm:ss'),           // 时长
             device: item.device        // 设备
           }))
 
@@ -104,7 +106,7 @@ function renderMarkdown(data) {
                 .padEnd(15, " ")}${item.distance.padEnd(
                 12,
                 " "
-              )}🕘 ${item.pace.padEnd(17, " ")}${item.relativeTime} `
+              )}🕘 ${item.totalTime.padEnd(17, " ")}${item.relativeTime} `
             );
         })
         if (prepareData.length === 3) {
