@@ -71,7 +71,7 @@ if (!EMAIL || !PASSWORD) throw Error('set EMAIL/PASSWORD env first!')
             title: item.name,         // 标题
             distance: (item.distance / 1000).toFixed(1) + 'km',      // 距离
             pace: dayjs(item.avgSpeed * 1000).format("mm'ss''"),           // 配速
-            totalTime: dayjs.duration(item.totalTime).format('HH:mm:ss'),           // 时长
+            totalTime: dayjs.duration(item.totalTime * 1000).format('HH:mm:ss'),           // 时长
             device: item.device        // 设备
           }))
 
