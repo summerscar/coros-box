@@ -127,6 +127,9 @@ function formatTitle (title) {
     if (title.includes("骑行")) {
       return `🚴${title}`;
     }
+    if (title.includes("水域") || title.includes("游泳")) {
+      return `🏊${title}`;
+    }
     switch (title) {
         case 'Open Water':
         case 'Pool Swim':
