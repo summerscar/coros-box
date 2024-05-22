@@ -1,3 +1,4 @@
+const isDEV = process.env.NODE_ENV === "development";
 const dayjs = require("dayjs");
 const fs = require("fs");
 const path = require("path");
@@ -14,8 +15,7 @@ dayjs.extend(duration);
 
 const RANGE = 10; // 最近7天
 const RANGE_TIME = 1000 * 60 * 60 * 24 * RANGE;
-const RECEND_DATA_LENGTH = 5;
-const LOGIN_URL = "https://www.coros.com/web/reg/login.html";
+const RECENT_DATA_LENGTH = 5;
 const MARKDOWN_FILE = "README.md";
 const EMAIL = process.env.EMAIL;
 const PASSWORD = process.env.PASSWORD;
@@ -80,26 +80,30 @@ if (!EMAIL || !PASSWORD) throw Error("set EMAIL/PASSWORD env first!");
       const data = list.map((item) => ({
         time: item.startTime * 1000,
         title: item.name, // 标题
+        formattedTitle: formatTitle(item.name), // 标题
         distance: (item.distance / 1000).toFixed(1) + "km", // 距离
         pace: dayjs(item.avgSpeed * 1000).format("mm'ss''"), // 配速
         totalTime: dayjs.duration(item.totalTime * 1000).format("HH:mm:ss"), // 时长
         device: item.device, // 设备
+        imageUrl: item.imageUrl,
       }));
 
-      const recenetData = data
+      const recentData = data
         .filter(({ time }) => new Date().getTime() - time < RANGE_TIME)
         .map((data) => ({
           ...data,
           relativeTime: dayjs().from(dayjs(data.time)),
         }))
-        .slice(0, RECEND_DATA_LENGTH);
+        .slice(0, RECENT_DATA_LENGTH);
 
-      console.log("data: \n", recenetData);
-      renderMarkdown(recenetData);
+      console.log("data: \n", recentData);
+      renderMarkdown(recentData);
     });
 })();
 
 function renderMarkdown(data) {
+  if (isDEV) return;
+
   const markdownPath = path.resolve(__dirname, "../", "../", MARKDOWN_FILE);
   const markdownContent = fs.readFileSync(markdownPath, "utf-8");
   const markdownContentArray = markdownContent.split("\n");
@@ -117,7 +121,7 @@ function renderMarkdown(data) {
       prepareData.splice(
         prepareData.length - 1,
         0,
-        `${formatTitle(item.title)
+        `${item.formattedTitle
           .replace(" ", " ")
           .padEnd(15, " ")}${item.distance.padEnd(
           12,
