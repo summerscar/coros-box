@@ -4,20 +4,29 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "NODE_ENV=development nodemon src/index.js",
+    "start": "tsx src/index.ts",
+    "dev": "NODE_ENV=development nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"tsx src/index.ts\"",
+    "dev_svg": "NODE_ENV=development nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"tsx src/render_svg.ts\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "summerscar",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20.12.12",
     "dotenv": "^9.0.2",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "tsx": "^4.10.5"
   },
   "dependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/js-md5": "^0.7.2",
+    "@types/jsdom": "^21.1.6",
+    "@types/node-fetch": "^2.6.11",
     "cheerio": "^1.0.0-rc.9",
+    "d3": "^7.9.0",
     "dayjs": "^1.10.4",
     "js-md5": "^0.7.3",
+    "jsdom": "^24.0.0",
     "node-fetch": "^2.6.1"
   },
   "cspell": {
@@ -26,7 +35,10 @@
     "dictionaryDefinitions": [],
     "dictionaries": [],
     "words": [
-      "coros"
+      "accesstoken",
+      "analyse",
+      "coros",
+      "summerscar"
     ],
     "ignoreWords": [],
     "import": []
