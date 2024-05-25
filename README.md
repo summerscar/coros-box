@@ -2,7 +2,7 @@
 
 ## Example
 
-<https://github.com/summerscar/summerscar/blob/master/coros-card/card.svg>
+![](./coros-card/card.svg)
 
 ## Usage
 

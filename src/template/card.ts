@@ -114,18 +114,30 @@ export class Card {
     }
 
     // map image
-    this.svg
-      .append<SVGSVGElement>("g")
+    const mapG = this.svg.append<SVGSVGElement>("g");
+    mapG
       .attr("transform", "translate(0, 100)")
       .selectAll(null)
       .data(activities)
       .enter()
       .append("image")
+      .attr("clip-path", (_, index) => `url(#clip${index})`)
       .attr("xlink:href", (d) => {
         return d.imageData || "";
       })
       .attr("x", this.xPadding)
-      .attr("y", (d, index) => labelHeight * index * lineHeightOffset)
+      .attr("y", (_, index) => {
+        mapG
+          .append("defs")
+          .attr("xmlns", "http://www.w3.org/2000/svg")
+          .html(
+            `<rect id="rect${index}" x="${this.xPadding}" y="${
+              labelHeight * index * lineHeightOffset
+            }" width="38.4" height="38.4" rx="4" ry="4"/><clipPath id="clip${index}"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#rect${index}"/></clipPath>`
+          );
+
+        return labelHeight * index * lineHeightOffset;
+      })
       .attr("width", labelHeight * 2.4)
       .attr("height", labelHeight * 2.4);
 

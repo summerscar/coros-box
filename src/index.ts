@@ -7,7 +7,7 @@ require("dotenv").config();
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
 import { Card } from "./template/card";
-import { OUTPUT_DIR, isDEV } from "./config";
+import { OUTPUT_DIR, formatSportTitle, isDEV } from "./config";
 import { Activities, Summary } from "./global";
 
 // require('dayjs/locale/zh-cn')
@@ -126,7 +126,7 @@ if (!EMAIL || !PASSWORD) throw Error("set EMAIL/PASSWORD env first!");
         const data = activityList.map((item) => ({
           time: item.startTime * 1000,
           title: item.name, // 标题
-          formattedTitle: formatTitle(item.name), // 标题
+          formattedTitle: formatSportTitle(item.name), // 标题
           distance: (item.distance / 1000).toFixed(1) + "km", // 距离
           pace: dayjs(item.avgSpeed * 1000).format("mm'ss''"), // 配速
           totalTime: dayjs.duration(item.totalTime * 1000).format("HH:mm:ss"), // 时长
@@ -218,31 +218,5 @@ function renderMarkdown(
       flag: "w",
       encoding: "utf-8",
     });
-  }
-}
-
-function formatTitle(title: string) {
-  if (title.includes("跑步")) {
-    return `🏃${title}`;
-  }
-  if (title.includes("骑行")) {
-    return `🚴${title}`;
-  }
-  if (title.includes("水域") || title.includes("游泳")) {
-    return `🏊${title}`;
-  }
-  if (title.includes("徒步")) {
-    return `🚶${title}`;
-  }
-  switch (title) {
-    case "Open Water":
-    case "Pool Swim":
-      return `🏊${title}`;
-    case "Run":
-      return `🏃${title}`;
-    case "Bike":
-      return `🚴${title}`;
-    default:
-      return title;
   }
 }
