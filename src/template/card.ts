@@ -145,9 +145,9 @@ export class Card {
 		// title
 		const titleKeyArray: { key: keyof Activity; offset: number }[] = [
 			{ key: "formattedTitle", offset: 0 },
-			{ key: "distance", offset: 80 },
-			{ key: "totalTime", offset: 160 },
-			{ key: "time", offset: 250 }
+			{ key: "distance", offset: 110 },
+			{ key: "totalTime", offset: 175 },
+			{ key: "time", offset: 260 }
 		];
 
 		titleKeyArray.forEach((keyItemConfig) => {
@@ -160,7 +160,7 @@ export class Card {
 				.append("text")
 				.text((d) => {
 					if (keyItemConfig.key === "time")
-						return dayjs(d[keyItemConfig.key]).format("YYYY-MM-DD");
+						return dayjs(d[keyItemConfig.key]).format("YYYY/MM/DD");
 					return d[keyItemConfig.key] || "";
 				})
 				.attr("x", 0)
